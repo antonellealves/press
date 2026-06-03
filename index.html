@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GitHub Copilot — A virada de junho de 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Mono:wght@400;500&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0b0d0f;
+  --surface: #111416;
+  --surface2: #181c1f;
+  --border: rgba(255,255,255,.07);
+  --border2: rgba(255,255,255,.12);
+  --text: #e8eaec;
+  --muted: #7a8494;
+  --accent: #00e5a0;
+  --accent2: #ff5c38;
+  --accent3: #5b9dff;
+  --warn: #f5a623;
+  --red: #ff4444;
+  --green: #00e5a0;
+  --font-display: 'Syne', sans-serif;
+  --font-body: 'DM Sans', sans-serif;
+  --font-mono: 'DM Mono', monospace;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.7;
+  overflow-x: hidden;
+}
+
+/* --- NAV --- */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  padding: 1rem 2rem;
+  display: flex; align-items: center; justify-content: space-between;
+  background: rgba(11,13,15,.85);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+}
+.nav-logo {
+  font-family: var(--font-display);
+  font-weight: 800; font-size: 15px;
+  color: var(--text); letter-spacing: -.01em;
+}
+.nav-logo span { color: var(--accent); }
+.nav-links { display: flex; gap: 2rem; list-style: none; }
+.nav-links a {
+  font-size: 13px; color: var(--muted); text-decoration: none;
+  transition: color .2s;
+}
+.nav-links a:hover { color: var(--text); }
+
+/* --- HERO --- */
+.hero {
+  min-height: 100vh;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  text-align: center; padding: 8rem 2rem 4rem;
+  position: relative; overflow: hidden;
+}
+.hero-grid-bg {
+  position: absolute; inset: 0; pointer-events: none;
+  background-image:
+    linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px);
+  background-size: 48px 48px;
+  mask-image: radial-gradient(ellipse 80% 60% at 50% 40%, black 0%, transparent 100%);
+}
+.hero-glow {
+  position: absolute; top: 20%; left: 50%; transform: translateX(-50%);
+  width: 600px; height: 300px;
+  background: radial-gradient(ellipse, rgba(0,229,160,.12) 0%, transparent 70%);
+  pointer-events: none;
+}
+.hero-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 12px; letter-spacing: .12em; text-transform: uppercase;
+  color: var(--accent); margin-bottom: 1.5rem;
+  display: flex; align-items: center; gap: .75rem;
+  animation: fadeUp .6s ease both;
+}
+.hero-eyebrow::before, .hero-eyebrow::after {
+  content: ''; flex: 1; max-width: 48px; height: 1px; background: var(--accent); opacity: .4;
+}
+.hero-title {
+  font-family: var(--font-display);
+  font-size: clamp(2.5rem, 6vw, 5rem);
+  font-weight: 800; line-height: 1.05; letter-spacing: -.03em;
+  margin-bottom: 1.5rem;
+  animation: fadeUp .6s .1s ease both;
+}
+.hero-title .line2 { color: var(--accent2); }
+.hero-sub {
+  max-width: 560px; font-size: 18px; font-weight: 300;
+  color: var(--muted); line-height: 1.65; margin-bottom: 2.5rem;
+  animation: fadeUp .6s .2s ease both;
+}
+.hero-date {
+  font-family: var(--font-mono); font-size: 13px; color: var(--muted);
+  border: 1px solid var(--border2); border-radius: 99px;
+  padding: .35rem 1rem;
+  animation: fadeUp .6s .3s ease both;
+}
+.scroll-hint {
+  position: absolute; bottom: 2rem; left: 50%; transform: translateX(-50%);
+  display: flex; flex-direction: column; align-items: center; gap: .4rem;
+  font-size: 11px; color: var(--muted); letter-spacing: .08em;
+  animation: fadeUp .6s .5s ease both;
+}
+.scroll-line {
+  width: 1px; height: 48px; background: linear-gradient(to bottom, var(--accent), transparent);
+  animation: scrollPulse 2s ease infinite;
+}
+@keyframes scrollPulse {
+  0%,100% { opacity:.3; transform: scaleY(1); }
+  50% { opacity:1; transform: scaleY(1.1); }
+}
+
+/* --- SECTIONS --- */
+section { padding: 6rem 2rem; max-width: 960px; margin: 0 auto; }
+.section-label {
+  font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em;
+  text-transform: uppercase; color: var(--accent); margin-bottom: .75rem;
+  display: flex; align-items: center; gap: .6rem;
+}
+.section-label::before {
+  content: ''; width: 24px; height: 1px; background: var(--accent);
+}
+.section-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+  font-weight: 700; line-height: 1.15; letter-spacing: -.025em;
+  margin-bottom: 1rem;
+}
+.section-desc {
+  font-size: 16px; color: var(--muted); max-width: 580px; line-height: 1.75; margin-bottom: 3rem;
+}
+
+/* --- TRANSITION CARD --- */
+.transition-block {
+  display: grid; grid-template-columns: 1fr auto 1fr; gap: 1.5rem;
+  align-items: center; margin-bottom: 3rem;
+}
+.model-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px; padding: 1.75rem;
+  position: relative; overflow: hidden;
+}
+.model-card::before {
+  content: ''; position: absolute; inset: 0; border-radius: inherit;
+  pointer-events: none;
+}
+.model-card.old::before { background: linear-gradient(135deg, rgba(245,166,35,.04) 0%, transparent 60%); }
+.model-card.new::before { background: linear-gradient(135deg, rgba(0,229,160,.06) 0%, transparent 60%); }
+.model-card.old { border-color: rgba(245,166,35,.2); }
+.model-card.new { border-color: rgba(0,229,160,.2); }
+.model-badge {
+  font-family: var(--font-mono); font-size: 10px; letter-spacing: .1em;
+  text-transform: uppercase; padding: 3px 10px; border-radius: 99px; margin-bottom: 1rem;
+  display: inline-block;
+}
+.badge-old { background: rgba(245,166,35,.12); color: var(--warn); }
+.badge-new { background: rgba(0,229,160,.12); color: var(--accent); }
+.model-card h3 {
+  font-family: var(--font-display); font-size: 18px; font-weight: 700;
+  margin-bottom: .6rem; letter-spacing: -.02em;
+}
+.model-card p { font-size: 14px; color: var(--muted); line-height: 1.65; }
+.arrow-center {
+  font-size: 32px; color: var(--accent2); font-family: var(--font-display);
+  font-weight: 800;
+}
+
+/* --- TOKEN SECTION --- */
+.token-types { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; margin-bottom: 3rem; }
+.token-card {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+  padding: 1.5rem; position: relative; overflow: hidden;
+  transition: border-color .3s, transform .3s;
+}
+.token-card:hover { transform: translateY(-3px); }
+.token-card.input-card { border-top: 3px solid var(--accent3); }
+.token-card.output-card { border-top: 3px solid var(--warn); }
+.token-card.cached-card { border-top: 3px solid var(--accent); }
+.token-number {
+  font-family: var(--font-mono); font-size: 28px; font-weight: 500;
+  margin-bottom: .25rem;
+}
+.token-number.blue { color: var(--accent3); }
+.token-number.amber { color: var(--warn); }
+.token-number.green { color: var(--accent); }
+.token-type-name {
+  font-family: var(--font-display); font-size: 14px; font-weight: 700;
+  margin-bottom: .5rem; color: var(--text);
+}
+.token-card p { font-size: 13px; color: var(--muted); line-height: 1.6; }
+.token-example {
+  font-family: var(--font-mono); font-size: 11px;
+  background: rgba(255,255,255,.04); border-radius: 6px;
+  padding: .5rem .75rem; margin-top: .75rem; color: var(--muted);
+  border: 1px solid var(--border);
+}
+
+/* --- FORMULA --- */
+.formula-block {
+  background: var(--surface); border: 1px solid var(--border2);
+  border-radius: 16px; padding: 2rem 2.5rem; margin-bottom: 3rem;
+  display: flex; align-items: center; justify-content: center; gap: 1.5rem;
+  flex-wrap: wrap;
+}
+.formula-part {
+  text-align: center;
+}
+.formula-val {
+  font-family: var(--font-display); font-size: 2rem; font-weight: 800;
+  line-height: 1;
+}
+.formula-label { font-size: 12px; color: var(--muted); margin-top: .25rem; }
+.formula-op { font-size: 2rem; color: var(--muted); font-weight: 300; }
+
+/* --- PLANS --- */
+.plans-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1rem; margin-bottom: 3rem; }
+.plan-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 14px; padding: 1.5rem 1.25rem;
+  position: relative; transition: border-color .3s, transform .3s;
+}
+.plan-card:hover { transform: translateY(-2px); border-color: var(--border2); }
+.plan-card.featured {
+  border-color: rgba(0,229,160,.35);
+  background: linear-gradient(160deg, rgba(0,229,160,.05) 0%, var(--surface) 60%);
+}
+.plan-label {
+  font-family: var(--font-mono); font-size: 10px; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--muted); margin-bottom: .5rem;
+}
+.plan-name { font-family: var(--font-display); font-size: 16px; font-weight: 700; margin-bottom: .5rem; }
+.plan-price { font-family: var(--font-display); font-size: 26px; font-weight: 800; margin-bottom: .25rem; }
+.plan-price span { font-size: 14px; font-weight: 400; color: var(--muted); }
+.plan-credits {
+  font-size: 12px; color: var(--accent); margin-bottom: .5rem;
+  font-family: var(--font-mono);
+}
+.plan-note { font-size: 12px; color: var(--muted); line-height: 1.5; }
+
+/* --- COST TABLE --- */
+.cost-table { width: 100%; border-collapse: collapse; margin-bottom: 3rem; }
+.cost-table thead th {
+  font-family: var(--font-mono); font-size: 11px; letter-spacing: .08em;
+  text-transform: uppercase; color: var(--muted);
+  padding: .75rem 1rem; text-align: left; border-bottom: 1px solid var(--border);
+}
+.cost-table tbody tr {
+  border-bottom: 1px solid var(--border);
+  transition: background .15s;
+}
+.cost-table tbody tr:hover { background: rgba(255,255,255,.02); }
+.cost-table td { padding: 1rem; font-size: 14px; }
+.cost-table .profile { color: var(--text); font-weight: 400; }
+.cost-table .before { font-family: var(--font-mono); color: var(--muted); }
+.cost-table .after { font-family: var(--font-mono); font-weight: 500; }
+.cost-table .after.safe { color: var(--green); }
+.cost-table .after.danger { color: var(--red); }
+.mult-badge {
+  font-size: 11px; font-family: var(--font-mono);
+  padding: 2px 8px; border-radius: 99px;
+}
+.mult-badge.safe { background: rgba(0,229,160,.12); color: var(--green); }
+.mult-badge.warn { background: rgba(245,166,35,.12); color: var(--warn); }
+.mult-badge.danger { background: rgba(255,68,68,.12); color: var(--red); }
+
+/* --- WHAT BURNS TOKENS --- */
+.burn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 3rem; }
+.burn-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 12px; padding: 1.25rem 1.5rem;
+  display: flex; gap: 1rem; align-items: flex-start;
+}
+.burn-card.risky { border-left: 3px solid rgba(255,68,68,.5); }
+.burn-card.safe { border-left: 3px solid rgba(0,229,160,.5); }
+.burn-icon { font-size: 20px; flex-shrink: 0; margin-top: .1rem; }
+.burn-title { font-size: 14px; font-weight: 500; margin-bottom: .25rem; }
+.burn-desc { font-size: 13px; color: var(--muted); line-height: 1.55; }
+.risk-pill {
+  font-family: var(--font-mono); font-size: 10px; letter-spacing: .06em;
+  text-transform: uppercase; padding: 2px 7px; border-radius: 99px;
+  display: inline-block; margin-bottom: .35rem;
+}
+.risk-pill.high { background: rgba(255,68,68,.12); color: var(--red); }
+.risk-pill.low { background: rgba(0,229,160,.12); color: var(--green); }
+
+/* --- TIPS --- */
+.tips-list { display: flex; flex-direction: column; gap: .75rem; margin-bottom: 3rem; }
+.tip-item {
+  display: flex; gap: 1.25rem; align-items: flex-start;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 12px; padding: 1.25rem 1.5rem;
+  transition: border-color .25s, transform .25s;
+}
+.tip-item:hover { border-color: var(--border2); transform: translateX(4px); }
+.tip-num {
+  font-family: var(--font-display); font-size: 28px; font-weight: 800;
+  color: rgba(0,229,160,.2); line-height: 1; flex-shrink: 0; min-width: 32px;
+}
+.tip-content h4 { font-size: 15px; font-weight: 500; margin-bottom: .3rem; }
+.tip-content p { font-size: 14px; color: var(--muted); line-height: 1.6; }
+
+/* --- FOOTER --- */
+footer {
+  border-top: 1px solid var(--border);
+  padding: 2rem; text-align: center;
+  font-size: 13px; color: var(--muted);
+  font-family: var(--font-mono);
+}
+footer span { color: var(--accent); }
+
+/* --- DIVIDER --- */
+.section-divider {
+  max-width: 960px; margin: 0 auto;
+  border: none; border-top: 1px solid var(--border);
+}
+
+/* --- ANIMATIONS --- */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.reveal {
+  opacity: 0; transform: translateY(24px);
+  transition: opacity .6s ease, transform .6s ease;
+}
+.reveal.visible { opacity: 1; transform: none; }
+
+/* stagger children */
+.reveal-stagger > * {
+  opacity: 0; transform: translateY(20px);
+  transition: opacity .5s ease, transform .5s ease;
+}
+.reveal-stagger.visible > *:nth-child(1) { opacity:1;transform:none;transition-delay:.05s }
+.reveal-stagger.visible > *:nth-child(2) { opacity:1;transform:none;transition-delay:.12s }
+.reveal-stagger.visible > *:nth-child(3) { opacity:1;transform:none;transition-delay:.19s }
+.reveal-stagger.visible > *:nth-child(4) { opacity:1;transform:none;transition-delay:.26s }
+.reveal-stagger.visible > *:nth-child(5) { opacity:1;transform:none;transition-delay:.33s }
+
+/* --- TICKER --- */
+.ticker-wrap {
+  overflow: hidden; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
+  background: var(--surface); padding: .6rem 0; margin-bottom: 0;
+}
+.ticker {
+  display: flex; width: max-content;
+  animation: ticker 28s linear infinite;
+}
+.ticker span {
+  font-family: var(--font-mono); font-size: 12px; color: var(--muted);
+  padding: 0 2rem; white-space: nowrap;
+}
+.ticker span strong { color: var(--accent2); }
+@keyframes ticker {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+/* --- HIGHLIGHT QUOTE --- */
+.big-quote {
+  border-left: 3px solid var(--accent2);
+  padding: 1.5rem 2rem; margin: 3rem 0;
+  background: rgba(255,92,56,.04);
+  border-radius: 0 12px 12px 0;
+}
+.big-quote p {
+  font-family: var(--font-display); font-size: clamp(1.1rem, 2.5vw, 1.5rem);
+  font-weight: 700; line-height: 1.4; color: var(--text);
+  letter-spacing: -.02em;
+}
+.big-quote cite { font-size: 13px; color: var(--muted); font-style: normal; margin-top: .75rem; display: block; }
+
+/* responsive */
+@media (max-width: 700px) {
+  .transition-block { grid-template-columns: 1fr; }
+  .arrow-center { transform: rotate(90deg); }
+  .token-types { grid-template-columns: 1fr; }
+  .burn-grid { grid-template-columns: 1fr; }
+  .plans-grid { grid-template-columns: 1fr 1fr; }
+  nav { padding: .75rem 1rem; }
+  .nav-links { display: none; }
+  section { padding: 4rem 1.25rem; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">Copilot <span>2026</span></div>
+  <ul class="nav-links">
+    <li><a href="#mudanca">O que mudou</a></li>
+    <li><a href="#tokens">Tokens</a></li>
+    <li><a href="#planos">Planos</a></li>
+    <li><a href="#impacto">Impacto</a></li>
+    <li><a href="#dicas">Como economizar</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero" style="max-width:100%;padding-top:8rem">
+  <div class="hero-grid-bg"></div>
+  <div class="hero-glow"></div>
+  <div class="hero-eyebrow">GitHub Copilot — mudança de modelo</div>
+  <h1 class="hero-title">
+    Fim da assinatura fixa.<br>
+    <span class="line2">Agora você paga<br>por cada token.</span>
+  </h1>
+  <p class="hero-sub">
+    Em 1° de junho de 2026, a Microsoft encerrou o modelo de Premium Requests e migrou todos os planos para cobrança baseada em uso real de tokens.
+  </p>
+  <div class="hero-date">Vigência: 01 / 06 / 2026</div>
+  <div class="scroll-hint">
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+<!-- TICKER -->
+<div class="ticker-wrap">
+  <div class="ticker">
+    <span>1 AI Credit = <strong>US$ 0,01</strong></span>
+    <span>•</span>
+    <span>Completions inline continuam <strong>ilimitadas e gratuitas</strong></span>
+    <span>•</span>
+    <span>Relatos de aumentos de custo de <strong>até 150×</strong></span>
+    <span>•</span>
+    <span>4,7 milhões de subscribers afetados</span>
+    <span>•</span>
+    <span>Agent mode é o principal <strong>villão do consumo</strong></span>
+    <span>•</span>
+    <span>Créditos mensais <strong>não acumulam</strong></span>
+    <span>•</span>
+    <span>1 AI Credit = <strong>US$ 0,01</strong></span>
+    <span>•</span>
+    <span>Completions inline continuam <strong>ilimitadas e gratuitas</strong></span>
+    <span>•</span>
+    <span>Relatos de aumentos de custo de <strong>até 150×</strong></span>
+    <span>•</span>
+    <span>4,7 milhões de subscribers afetados</span>
+    <span>•</span>
+    <span>Agent mode é o principal <strong>villão do consumo</strong></span>
+    <span>•</span>
+    <span>Créditos mensais <strong>não acumulam</strong></span>
+  </div>
+</div>
+
+<!-- MUDANÇA -->
+<section id="mudanca">
+  <div class="section-label">01 — O que mudou</div>
+  <h2 class="section-title reveal">De requisições fixas<br>para consumo por tokens</h2>
+  <p class="section-desc reveal">O modelo antigo abstraia o custo real: toda interação valia "uma requisição", independente de complexidade. O novo expõe a economia real do processamento de IA.</p>
+
+  <div class="transition-block reveal-stagger">
+    <div class="model-card old">
+      <span class="model-badge badge-old">até maio 2026</span>
+      <h3>Premium Requests</h3>
+      <p>Uma pergunta simples e uma sessão de agente de horas consumiam <em>exatamente a mesma coisa</em>. Fatura fixa todo mês. Fácil de orçar, mas economicamente insustentável para a Microsoft.</p>
+    </div>
+    <div class="arrow-center">→</div>
+    <div class="model-card new">
+      <span class="model-badge badge-new">a partir de jun 2026</span>
+      <h3>GitHub AI Credits</h3>
+      <p>Cada token processado — tanto no envio quanto na geração de resposta — tem um custo baseado no modelo utilizado. A fatura escala com o que você realmente usa.</p>
+    </div>
+  </div>
+
+  <div class="big-quote reveal">
+    <p>"O Copilot era vendido como academia de ginástica: paga US$ 10/mês, vai quando quiser. Agora funciona como táxi: cada quilômetro custa."</p>
+    <cite>— Analogia recorrente entre desenvolvedores no Reddit e GitHub Discussions</cite>
+  </div>
+</section>
+
+<hr class="section-divider">
+
+<!-- TOKENS -->
+<section id="tokens">
+  <div class="section-label">02 — Como funciona a cobrança</div>
+  <h2 class="section-title reveal">Os três tipos de token<br>que geram custo</h2>
+  <p class="section-desc reveal">Toda interação com o Copilot (exceto completions inline) consome tokens. A conta final é: tokens × taxa do modelo = AI Credits consumidos.</p>
+
+  <div class="token-types reveal-stagger">
+    <div class="token-card input-card">
+      <div class="token-number blue">~70%</div>
+      <div class="token-type-name">Input tokens</div>
+      <p>Tudo que você envia ao modelo: o prompt, o código selecionado, arquivos abertos no editor, histórico da conversa e instruções de sistema.</p>
+      <div class="token-example">prompt + código + contexto do workspace</div>
+    </div>
+    <div class="token-card output-card">
+      <div class="token-number amber">~25%</div>
+      <div class="token-type-name">Output tokens</div>
+      <p>O código gerado ou a resposta produzida pelo modelo. Geralmente custam mais por token do que os inputs nos modelos mais avançados.</p>
+      <div class="token-example">código gerado / resposta em texto</div>
+    </div>
+    <div class="token-card cached-card">
+      <div class="token-number green">~5%</div>
+      <div class="token-type-name">Cached tokens</div>
+      <p>Contexto reutilizado de interações anteriores na mesma sessão. Custam menos, mas ainda entram na conta — especialmente em modelos Anthropic.</p>
+      <div class="token-example">contexto reutilizado da sessão atual</div>
+    </div>
+  </div>
+
+  <div class="formula-block reveal">
+    <div class="formula-part">
+      <div class="formula-val" style="color:var(--accent3)">tokens</div>
+      <div class="formula-label">quantidade processada</div>
+    </div>
+    <div class="formula-op">×</div>
+    <div class="formula-part">
+      <div class="formula-val" style="color:var(--warn)">taxa</div>
+      <div class="formula-label">por modelo ($/M tokens)</div>
+    </div>
+    <div class="formula-op">=</div>
+    <div class="formula-part">
+      <div class="formula-val" style="color:var(--accent)">credits</div>
+      <div class="formula-label">1 credit = US$ 0,01</div>
+    </div>
+  </div>
+
+  <p class="reveal" style="font-size:14px;color:var(--muted);line-height:1.75;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.25rem 1.5rem">
+    <strong style="color:var(--text)">Contexto automático:</strong> o Copilot inclui automaticamente em cada requisição o arquivo ativo, código selecionado, arquivos próximos e conteúdo relevante do repositório — além de arquivos como <code style="font-family:var(--font-mono);font-size:12px;color:var(--accent)">.github/copilot-instructions.md</code> e o histórico de conversas. Isso significa que, mesmo sem você colar código manualmente, o workspace pode estar gerando centenas de milhares de input tokens invisíveis.
+  </p>
+</section>
+
+<hr class="section-divider">
+
+<!-- PLANOS -->
+<section id="planos">
+  <div class="section-label">03 — Planos e créditos</div>
+  <h2 class="section-title reveal">Os preços não mudaram.<br>O que compram, sim.</h2>
+  <p class="section-desc reveal">Os valores mensais são idênticos. A diferença é que agora representam uma cota de AI Credits — não acumulam entre meses.</p>
+
+  <div class="plans-grid reveal-stagger">
+    <div class="plan-card">
+      <div class="plan-label">Plano</div>
+      <div class="plan-name">Free</div>
+      <div class="plan-price">US$ 0</div>
+      <div class="plan-credits">cota limitada</div>
+      <div class="plan-note">Completions ilimitadas. Créditos escassos para chat.</div>
+    </div>
+    <div class="plan-card">
+      <div class="plan-label">Plano</div>
+      <div class="plan-name">Pro</div>
+      <div class="plan-price">US$ 10<span>/mês</span></div>
+      <div class="plan-credits">US$ 10 em AI Credits</div>
+      <div class="plan-note">Para uso individual moderado.</div>
+    </div>
+    <div class="plan-card featured">
+      <div class="plan-label">Plano</div>
+      <div class="plan-name">Pro+</div>
+      <div class="plan-price">US$ 39<span>/mês</span></div>
+      <div class="plan-credits">US$ 39 em AI Credits</div>
+      <div class="plan-note">Inclui acesso a modelos frontier (Claude Opus, GPT-4.1o).</div>
+    </div>
+    <div class="plan-card">
+      <div class="plan-label">Plano</div>
+      <div class="plan-name">Business</div>
+      <div class="plan-price">US$ 19<span>/user</span></div>
+      <div class="plan-credits">US$ 19/usuário — pool compartilhado</div>
+      <div class="plan-note">Créditos da equipe são somados e compartilhados.</div>
+    </div>
+    <div class="plan-card">
+      <div class="plan-label">Plano</div>
+      <div class="plan-name">Enterprise</div>
+      <div class="plan-price">US$ 39<span>/user</span></div>
+      <div class="plan-credits">US$ 39/usuário — pool corporativo</div>
+      <div class="plan-note">Pool unificado. Maior flexibilidade para times com uso variável.</div>
+    </div>
+  </div>
+
+  <p class="reveal" style="font-size:13px;color:var(--accent);font-family:var(--font-mono);background:rgba(0,229,160,.05);border:1px solid rgba(0,229,160,.15);border-radius:10px;padding:1rem 1.25rem">
+    ✓ Code completions e Next Edit Suggestions continuam ILIMITADOS em todos os planos pagos — sem consumir AI Credits.
+  </p>
+</section>
+
+<hr class="section-divider">
+
+<!-- IMPACTO -->
+<section id="impacto">
+  <div class="section-label">04 — Impacto real</div>
+  <h2 class="section-title reveal">O choque na fatura</h2>
+  <p class="section-desc reveal">Relatos da comunidade no Reddit, X e GitHub Discussions no primeiro dia após a virada.</p>
+
+  <table class="cost-table reveal">
+    <thead>
+      <tr>
+        <th>Perfil de uso</th>
+        <th>Antes</th>
+        <th>Depois</th>
+        <th>Multiplicador</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="profile">Dev que usa só autocomplete inline</td>
+        <td class="before">US$ 10/mês</td>
+        <td class="after safe">US$ 10/mês</td>
+        <td><span class="mult-badge safe">sem impacto</span></td>
+      </tr>
+      <tr>
+        <td class="profile">Dev com chat ocasional, sem agent mode</td>
+        <td class="before">US$ 10/mês</td>
+        <td class="after warn">~US$ 30–80/mês</td>
+        <td><span class="mult-badge warn">3–8×</span></td>
+      </tr>
+      <tr>
+        <td class="profile">Dev com uso moderado de chat e code review</td>
+        <td class="before">US$ 29/mês</td>
+        <td class="after danger">~US$ 750/mês</td>
+        <td><span class="mult-badge danger">~26×</span></td>
+      </tr>
+      <tr>
+        <td class="profile">Dev com agent mode intenso em repositório grande</td>
+        <td class="before">US$ 50/mês</td>
+        <td class="after danger">~US$ 3.000/mês</td>
+        <td><span class="mult-badge danger">~60×</span></td>
+      </tr>
+      <tr>
+        <td class="profile">Empresa com agentes autônomos em escala</td>
+        <td class="before">US$ 39/mês</td>
+        <td class="after danger">~US$ 5.852/mês</td>
+        <td><span class="mult-badge danger">150×</span></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="burn-grid reveal-stagger">
+    <div class="burn-card risky">
+      <div class="burn-icon">🔥</div>
+      <div>
+        <span class="risk-pill high">alto consumo</span>
+        <div class="burn-title">Agent mode com repositório inteiro</div>
+        <div class="burn-desc">O agente indexa todos os arquivos como contexto. Um repo médio pode gerar 100k+ input tokens por sessão.</div>
+      </div>
+    </div>
+    <div class="burn-card risky">
+      <div class="burn-icon">🔥</div>
+      <div>
+        <span class="risk-pill high">alto consumo</span>
+        <div class="burn-title">Code review automático em PRs</div>
+        <div class="burn-desc">A partir de junho, o Copilot Code Review também consome créditos. PRs grandes geram muitos tokens.</div>
+      </div>
+    </div>
+    <div class="burn-card risky">
+      <div class="burn-icon">⚠️</div>
+      <div>
+        <span class="risk-pill high">atenção</span>
+        <div class="burn-title">.github/copilot-instructions.md extenso</div>
+        <div class="burn-desc">Esse arquivo é enviado como input em cada interação. Quanto maior, maior o overhead de tokens invisíveis.</div>
+      </div>
+    </div>
+    <div class="burn-card risky">
+      <div class="burn-icon">⚠️</div>
+      <div>
+        <span class="risk-pill high">atenção</span>
+        <div class="burn-title">Histórico longo em uma sessão de chat</div>
+        <div class="burn-desc">O histórico da conversa é reenviado a cada mensagem. Sessões longas acumulam input tokens progressivamente.</div>
+      </div>
+    </div>
+    <div class="burn-card safe">
+      <div class="burn-icon">✅</div>
+      <div>
+        <span class="risk-pill low">gratuito</span>
+        <div class="burn-title">Inline completions no editor</div>
+        <div class="burn-desc">As sugestões automáticas no editor (Tab) continuam ilimitadas e sem custo em todos os planos pagos.</div>
+      </div>
+    </div>
+    <div class="burn-card safe">
+      <div class="burn-icon">✅</div>
+      <div>
+        <span class="risk-pill low">gratuito</span>
+        <div class="burn-title">Next Edit Suggestions</div>
+        <div class="burn-desc">O recurso de previsão da próxima edição também permanece gratuito e ilimitado nos planos pagos.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="section-divider">
+
+<!-- DICAS -->
+<section id="dicas">
+  <div class="section-label">05 — Como economizar</div>
+  <h2 class="section-title reveal">Estratégias para<br>controlar o consumo</h2>
+  <p class="section-desc reveal">Ajustes de hábito e configuração que podem reduzir significativamente o consumo de créditos sem abrir mão da produtividade.</p>
+
+  <div class="tips-list reveal">
+    <div class="tip-item">
+      <div class="tip-num">01</div>
+      <div class="tip-content">
+        <h4>Referencie arquivos específicos, não o repositório inteiro</h4>
+        <p>Configure o Copilot para apontar só os módulos relevantes para cada tarefa. Reduzir o contexto de 100.000 para 20.000 tokens corta os custos de input em até 80%.</p>
+      </div>
+    </div>
+    <div class="tip-item">
+      <div class="tip-num">02</div>
+      <div class="tip-content">
+        <h4>Agrupe perguntas em uma única sessão de chat</h4>
+        <p>Cada sessão nova carrega overhead de system prompt e inicialização de contexto. Cinco perguntas numa sessão custam menos que cinco sessões individuais com uma pergunta cada.</p>
+      </div>
+    </div>
+    <div class="tip-item">
+      <div class="tip-num">03</div>
+      <div class="tip-content">
+        <h4>Escolha o modelo certo para cada tarefa</h4>
+        <p>Modelos leves (como GPT-4o-mini ou Claude Haiku) custam tokens muito mais baratos. Reserve os modelos frontier (Opus, GPT-4.1) para tarefas que realmente demandam raciocínio complexo.</p>
+      </div>
+    </div>
+    <div class="tip-item">
+      <div class="tip-num">04</div>
+      <div class="tip-content">
+        <h4>Revise e enxugue o .github/copilot-instructions.md</h4>
+        <p>Esse arquivo é enviado como input em toda interação. Mantenha-o conciso. Cada linha desnecessária vira custo em todas as requisições do time.</p>
+      </div>
+    </div>
+    <div class="tip-item">
+      <div class="tip-num">05</div>
+      <div class="tip-content">
+        <h4>Monitore antes de a fatura fechar</h4>
+        <p>O dashboard de billing do GitHub mostra consumo por modelo em tempo real. Acesse em <code style="font-family:var(--font-mono);font-size:12px">github.com → Settings → Billing & plans</code> e configure alertas antes do fim do ciclo.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p>Compilado por <span>Antonelle</span> · Fontes: GitHub Blog, GitHub Docs, Notebookcheck, Manual do Usuário · <span>Jun 2026</span></p>
+</footer>
+
+<script>
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add('visible');
+      observer.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.12 });
+
+document.querySelectorAll('.reveal, .reveal-stagger').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
